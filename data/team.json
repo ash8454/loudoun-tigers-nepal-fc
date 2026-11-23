@@ -1,0 +1,17 @@
+{
+  "intro": "Our teams, titles and club get-togethers.",
+  "photos": [
+    { "src": "images/team/title-winner-nacc-2025.jpg", "caption": "NACC 2025 title winners" },
+    { "src": "images/team/nacc-title-winner.jpg", "caption": "NACC title winners" },
+    { "src": "images/team/lt-green-team.jpg", "caption": "LT Green team" },
+    { "src": "images/team/loudoun-tigers-internal-cup.jpg", "caption": "Internal Cup" },
+    { "src": "images/team/lt-veterans-cup.jpg", "caption": "Veterans Cup" },
+    { "src": "images/team/orange-team-pic.jpg", "caption": "Orange team" },
+    { "src": "images/team/blue-winners-loudoun-cup.jpg", "caption": "Blue team, Loudoun Cup winners" },
+    { "src": "images/team/green-team-pic.jpg", "caption": "Green team" },
+    { "src": "images/team/loudoun-orange.jpg", "caption": "Loudoun Orange" },
+    { "src": "images/team/picnic2022a.jpg", "caption": "Picnic 2022" },
+    { "src": "images/team/viber-image-2022-08-28-17-48-44-031.jpg", "caption": "August 2022" },
+    { "src": "images/team/picnic2021b.jpg", "caption": "Picnic 2021" }
+  ]
+}

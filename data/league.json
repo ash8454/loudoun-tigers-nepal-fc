@@ -1,0 +1,64 @@
+{
+  "eyebrow": "Now open · Loudoun Tigers presents",
+  "title": "4th Loudoun Tigers Winter League 2026",
+  "tagline": "One team, one passion, one community.",
+  "flyer": "images/home/winter-league-2026.jpg",
+  "details": [
+    [
+      "📅",
+      "League dates",
+      "Dec 1, 2026 – Jan 19, 2027"
+    ],
+    [
+      "🕗",
+      "Game time",
+      "Tuesdays<br>7:45 pm – 8:50 pm"
+    ],
+    [
+      "⚽",
+      "Format",
+      "9 vs 9"
+    ],
+    [
+      "📍",
+      "Venue",
+      "<b>Sully Highlands Park</b><br>13808 Wall Rd, Herndon, VA 20171"
+    ]
+  ],
+  "buttons": [
+    {
+      "label": "Join / Sponsor",
+      "href": "contact.html",
+      "primary": true
+    },
+    {
+      "label": "View Venue",
+      "href": "venue.html"
+    }
+  ],
+  "links": [
+    {
+      "icon": "🏆",
+      "label": "Standings",
+      "text": "See where every team stands.",
+      "href": "standings.html"
+    },
+    {
+      "icon": "🗓️",
+      "label": "Schedule",
+      "text": "Fixtures, times and results.",
+      "href": "schedule.html"
+    },
+    {
+      "icon": "👥",
+      "label": "Our Team",
+      "text": "Photos, titles and club moments.",
+      "href": "team.html"
+    }
+  ],
+  "titleLines": [
+    "4th Loudoun Tigers",
+    "Winter League 2026"
+  ],
+  "linksTitle": "Explore the Winter League"
+}

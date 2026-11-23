@@ -1,0 +1,52 @@
+{
+  "name": "Loudoun Tigers",
+  "logo": "images/logo.png",
+  "tagline": "Home of Loudoun Tigers",
+  "email": "loudoun.tigers.nepal.fc@gmail.com",
+  "social": [
+    {
+      "label": "Facebook",
+      "url": ""
+    },
+    {
+      "label": "Instagram",
+      "url": ""
+    }
+  ],
+  "nav": [
+    {
+      "label": "Home",
+      "href": "index.html"
+    },
+    {
+      "label": "Venue",
+      "href": "venue.html"
+    },
+    {
+      "label": "Team",
+      "href": "team.html"
+    },
+    {
+      "label": "Standings",
+      "href": "standings.html"
+    },
+    {
+      "label": "Schedule",
+      "href": "schedule.html"
+    },
+    {
+      "label": "Statistics",
+      "href": "statistics.html"
+    },
+    {
+      "label": "Contact",
+      "href": "contact.html"
+    }
+  ],
+  "sheets": {
+    "schedule": "https://docs.google.com/spreadsheets/d/e/2PACX-1vR7GQK7-x_jHRlNqLrMM9fGpqK9wkkyVvp_3rVVjL2_B1x7yEgPQCxFSE5ZYFHvaEOqkhTSsiFwiqzj/pub?gid=0&single=true&output=csv",
+    "standings": "",
+    "goals": "",
+    "cards": ""
+  }
+}
