@@ -38,7 +38,7 @@ function table(rows, emptyMsg) {
     const filled = r.filter(c => c).length;
     // A row with only its first cell filled (e.g. "SEMI FINALS") is a section heading.
     if (filled === 1 && r[0]) return `<tr class="section"><td colspan="${cols}">${esc(r[0])}</td></tr>`;
-    return `<tr>${head.map((_, i) => `<td>${esc(r[i] || "")}</td>`).join("")}</tr>`;
+    return `<tr>${head.map((_, i) => `<td>${/^https?:\/\//.test(r[i] || "") ? `<a href="${esc(r[i])}" target="_blank" rel="noopener">Watch ▶</a>` : esc(r[i] || "")}</td>`).join("")}</tr>`;
   }).join("");
   return `<div class="tablewrap"><table><thead><tr>${head.map(h => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>`;
 }
@@ -85,6 +85,32 @@ const pages = {
       <li><b>Red card</b> – game suspension of 1 to 3 games based on referee recommendation.</li>
       <li><b>Suspension from league</b> – players are suspended for any brawls or physical conduct against other players or coaches.</li>
       <li><b>Final verbal warning</b> – 1 to 3 game suspension for repeated threatening or verbal misconduct against coaches, players or committee members.</li></ul></div>`;
+  },
+  async live(m) {
+    // Live links come from the "Game Link" column of the schedule Google Sheet (same sheet as the Schedule page).
+    // Which day is shown: the most recent game day on or before today that has links; if none yet, the next upcoming
+    // one. Each slot in data/live.json picks the row whose Field matches. Leave Game Link blank for "no stream".
+    const d = await getJSON("data/live.json");
+    const rows = await loadTable("schedule");
+    const head = (rows[0] || []).map(h => h.toLowerCase());
+    const col = re => head.findIndex(h => re.test(h));
+    const iTime = col(/time/), iField = col(/field/), iMatch = col(/match/), iLink = col(/link/);
+    const parse = s => { const p = (s || "").split("/"); return p.length === 3 ? new Date(+p[2], +p[0] - 1, +p[1]) : null; };
+    const games = iLink < 0 ? [] : rows.slice(1).map(r => ({ date: parse(r[0]), raw: r[0], time: r[iTime], field: r[iField], match: r[iMatch], url: r[iLink] }))
+      .filter(g => g.date && /^https?:\/\//.test(g.url || ""));   // only real http(s) links ever reach an iframe
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const past = games.filter(g => g.date <= today), future = games.filter(g => g.date > today);
+    const day = past.length ? Math.max(...past.map(g => +g.date)) : future.length ? Math.min(...future.map(g => +g.date)) : null;
+    const todays = games.filter(g => +g.date === day);
+    const section = s => {
+      const g = todays.find(x => String(x.field) === String(s.field));
+      const sub = g ? [g.date.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" }), g.time, `Field ${g.field}`, g.match].filter(Boolean).join(" · ") : `Field ${s.field}`;
+      return `<section class="livegame"><h2 class="sec">${esc(s.label)} <small>· ${esc(sub)}</small></h2>${
+        g ? `<div class="video"><iframe src="${esc(g.url)}" title="${esc(s.label)}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+          <p class="empty">Video not showing? <a href="${esc(g.url)}" target="_blank" rel="noopener">Open ${esc(s.label)} on BallerCam →</a></p>`
+        : `<div class="card"><p class="empty">${esc(d.emptyMessage)}</p><a class="btn primary" href="schedule.html">View schedule</a></div>`}</section>`;
+    };
+    m.innerHTML = `<h1>${esc(d.title)}</h1><p>${esc(d.caption)}</p><div class="livegrid">${d.slots.map(section).join("")}</div>`;
   },
   async contact(m, site) {
     const subject = encodeURIComponent("Loudoun Tigers inquiry");

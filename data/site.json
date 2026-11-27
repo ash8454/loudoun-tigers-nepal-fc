@@ -35,6 +35,10 @@
       "href": "schedule.html"
     },
     {
+      "label": "Live",
+      "href": "live.html"
+    },
+    {
       "label": "Statistics",
       "href": "statistics.html"
     },
