@@ -29,6 +29,20 @@ async function loadTable(name) {
   return getCSV(`data/${name}.csv`);
 }
 
+// Games with a BallerCam link, read from the "Game Link" column of the schedule sheet (shared by Live and Past Games).
+// Only real http(s) links are kept, so nothing else can ever reach an iframe or href.
+async function linkedGames() {
+  const rows = await loadTable("schedule");
+  const head = (rows[0] || []).map(h => h.toLowerCase());
+  const col = re => head.findIndex(h => re.test(h));
+  const iTime = col(/time/), iField = col(/field/), iMatch = col(/match/), iLink = col(/link/);
+  const parse = s => { const p = (s || "").split("/"); return p.length === 3 ? new Date(+p[2], +p[0] - 1, +p[1]) : null; };
+  if (iLink < 0) return [];
+  return rows.slice(1).map(r => ({ date: parse(r[0]), time: r[iTime], field: r[iField], match: r[iMatch], url: r[iLink] }))
+    .filter(g => g.date && /^https?:\/\//.test(g.url || ""));
+}
+const fmtDate = d => d.toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric", year: "numeric" });
+
 function table(rows, emptyMsg) {
   rows = rows.filter(r => r.some(c => c));
   if (rows.length < 2) return `<p class="empty">${esc(emptyMsg)}</p>`;
@@ -91,13 +105,7 @@ const pages = {
     // Which day is shown: the most recent game day on or before today that has links; if none yet, the next upcoming
     // one. Each slot in data/live.json picks the row whose Field matches. Leave Game Link blank for "no stream".
     const d = await getJSON("data/live.json");
-    const rows = await loadTable("schedule");
-    const head = (rows[0] || []).map(h => h.toLowerCase());
-    const col = re => head.findIndex(h => re.test(h));
-    const iTime = col(/time/), iField = col(/field/), iMatch = col(/match/), iLink = col(/link/);
-    const parse = s => { const p = (s || "").split("/"); return p.length === 3 ? new Date(+p[2], +p[0] - 1, +p[1]) : null; };
-    const games = iLink < 0 ? [] : rows.slice(1).map(r => ({ date: parse(r[0]), raw: r[0], time: r[iTime], field: r[iField], match: r[iMatch], url: r[iLink] }))
-      .filter(g => g.date && /^https?:\/\//.test(g.url || ""));   // only real http(s) links ever reach an iframe
+    const games = await linkedGames();
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const past = games.filter(g => g.date <= today), future = games.filter(g => g.date > today);
     const day = past.length ? Math.max(...past.map(g => +g.date)) : future.length ? Math.min(...future.map(g => +g.date)) : null;
@@ -110,7 +118,24 @@ const pages = {
           <p class="empty">Video not showing? <a href="${esc(g.url)}" target="_blank" rel="noopener">Open ${esc(s.label)} on BallerCam →</a></p>`
         : `<div class="card"><p class="empty">${esc(d.emptyMessage)}</p><a class="btn primary" href="schedule.html">View schedule</a></div>`}</section>`;
     };
-    m.innerHTML = `<h1>${esc(d.title)}</h1><p>${esc(d.caption)}</p><div class="livegrid">${d.slots.map(section).join("")}</div>`;
+    m.innerHTML = `<h1>${esc(d.title)}</h1><p>${esc(d.caption)}</p><div class="livegrid">${d.slots.map(section).join("")}</div><p><a href="past.html">Watch past games →</a></p>`;
+  },
+  async past(m) {
+    // Every game with a Game Link whose date is before today, newest first, grouped by day.
+    const d = await getJSON("data/live.json");
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const games = (await linkedGames()).filter(g => g.date < today).sort((a, b) => b.date - a.date || String(a.field).localeCompare(String(b.field)));
+    if (!games.length) { m.innerHTML = `<h1>${esc(d.pastTitle || "Past Games")}</h1><div class="card"><p class="empty">${esc(d.pastEmptyMessage || "No past games yet.")}</p><a class="btn primary" href="live.html">Go to live games</a></div>`; return; }
+    const days = [...new Set(games.map(g => +g.date))];
+    m.innerHTML = `<h1>${esc(d.pastTitle || "Past Games")}</h1><p>${esc(d.pastCaption || "")}</p>` + days.map(day => `<h2 class="sec">${esc(fmtDate(new Date(day)))}</h2><div class="replays">${
+      games.filter(g => +g.date === day).map(g => `<div class="replay"><div class="rinfo"><b>Field ${esc(g.field)}</b>${g.time ? ` · ${esc(g.time)}` : ""}${g.match ? `<br><span>${esc(g.match)}</span>` : ""}</div>
+        <div class="btns"><button class="btn primary" data-play="${esc(g.url)}">▶ Play here</button><a class="btn" href="${esc(g.url)}" target="_blank" rel="noopener">Open on BallerCam</a></div></div>`).join("")}</div>`).join("");
+    m.addEventListener("click", e => {
+      const b = e.target.closest("[data-play]"); if (!b) return;
+      const box = b.closest(".replay");
+      box.insertAdjacentHTML("beforeend", `<div class="video"><iframe src="${esc(b.dataset.play)}" title="Replay" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe></div>`);
+      b.remove();
+    });
   },
   async contact(m, site) {
     const subject = encodeURIComponent("Loudoun Tigers inquiry");

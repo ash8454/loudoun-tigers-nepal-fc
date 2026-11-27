@@ -39,6 +39,10 @@
       "href": "live.html"
     },
     {
+      "label": "Past Games",
+      "href": "past.html"
+    },
+    {
       "label": "Statistics",
       "href": "statistics.html"
     },

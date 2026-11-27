@@ -3,7 +3,16 @@
   "caption": "Two fields, two live streams. Powered by BallerCam.",
   "emptyMessage": "No live stream right now. Check the Schedule page for the next match.",
   "slots": [
-    { "label": "Game 1", "field": "1" },
-    { "label": "Game 2", "field": "2" }
-  ]
+    {
+      "label": "Game 1",
+      "field": "1"
+    },
+    {
+      "label": "Game 2",
+      "field": "2"
+    }
+  ],
+  "pastTitle": "Past Games",
+  "pastCaption": "Replays of earlier games. Powered by BallerCam.",
+  "pastEmptyMessage": "No past games yet. Replays appear here the day after a game, once it has a Game Link in the schedule."
 }
